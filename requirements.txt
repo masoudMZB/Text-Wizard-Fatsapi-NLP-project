@@ -1,0 +1,5 @@
+###### Requirements without Version Specifiers ######
+fastapi
+
+###### Requirements with Version Specifiers ######
+#docopt == 0.6.1             # Version Matching. Must be version 0.6.1
