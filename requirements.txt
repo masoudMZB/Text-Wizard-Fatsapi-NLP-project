@@ -3,6 +3,9 @@
 ###### Requirements without Version Specifiers #######
 # this command is added here in masoud_branch_ngram
 fastapi
+seaborn
+arabic_reshaper
+python-bidi
 
 ###### Requirements with Version Specifiers #######
 #docopt == 0.6.1             # Version Matching. Must be version 0.6.1
