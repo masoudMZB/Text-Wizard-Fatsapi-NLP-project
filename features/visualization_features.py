@@ -7,10 +7,12 @@ import os
 # Specify path where this code exist
 script_path=os.path.dirname(os.path.abspath(__file__))
 
-def word_cloud(text):
-    wc=WordCloudFa()
+def word_cloud(text,remove_stop=True,include_numbers=False):
+    wc=WordCloudFa(stopwords=set(),persian_normalize=True,include_numbers=include_numbers,background_color='white')
+    if remove_stop:
+        wc.add_stop_words_from_file(join(script_path,'stopwords.dat'))
     wc.generate(text)
-    wc.to_image().save(join(script_path,'first.png'))
+    wc.to_image().save(join(script_path,'first.png'),dpi=(300,300))
     
     
 sample='''
