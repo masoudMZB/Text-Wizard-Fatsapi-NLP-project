@@ -3,6 +3,7 @@ from wordcloud_fa import WordCloudFa
 from os.path import join
 import os
 
+from hazm import POSTagger,word_tokenize
 
 # Specify path where this code exist
 script_path=os.path.dirname(os.path.abspath(__file__))
@@ -10,11 +11,28 @@ script_path=os.path.dirname(os.path.abspath(__file__))
 def word_cloud(text,remove_stop=True,include_numbers=False):
     wc=WordCloudFa(stopwords=set(),persian_normalize=True,include_numbers=include_numbers,background_color='white')
     if remove_stop:
-        wc.add_stop_words_from_file(join(script_path,'stopwords.dat'))
+        wc.add_stop_words_from_file(join(script_path,'resources','stopwords.dat'))
     wc.generate(text)
     wc.to_image().save(join(script_path,'first.png'),dpi=(300,300))
     
+def POS_WC(text,POS,remove_stop=False,include_numbers=True):
     
+    tagger=POSTagger(model=join(script_path,'resources','postagger.model'))
+    POS_tags=tagger.tag(word_tokenize(text.strip()))
+    if POS=='V':
+        words_tags=list(filter(lambda x:x[1]=='V',POS_tags))
+        words=list(map(lambda x:x[0],words_tags))
+        new_text=' '.join(words)
+        word_cloud(new_text,remove_stop=remove_stop,include_numbers=include_numbers)
+    elif POS=='Adj':
+        words_tags=list(filter(lambda x:x[1]=='AJe' or x[1]=='AJ',POS_tags))
+        words=list(map(lambda x:x[0],words_tags))
+        new_text=' '.join(words)
+        word_cloud(new_text,remove_stop=remove_stop,include_numbers=include_numbers)
+    else:
+        raise Exception("Please provide a valid POS tag")
+        
+
 sample='''
 ایران با نام رسمی جمهوری اسلامی ایران، کشوری در آسیای غربی است. این کشور با ۱٬۶۴۸٬۱۹۵ کیلومتر مربع پهناوری، دومین کشور بزرگ خاورمیانه است. ایران از شمال غرب با ارمنستان و آذربایجان، از شمال با دریای خزر، از شمال شرق با ترکمنستان، از شرق با افغانستان و پاکستان، از جنوب با خلیج فارس و دریای عمان و در غرب با عراق و ترکیه هم‌مرز است. این کشور خاورمیانه‌ای، جایگاه استراتژیکی در منطقهٔ خلیج فارس دارد و تنگهٔ هرمز در جنوب آن، مسیری حیاتی برای انتقال نفت خام است. جمعیت کل استان‌های ایران از ۸۳٫۵ میلیون تن می‌گذرد و تهران، پایتخت و پرجمعیت‌ترین شهر این کشور است. ایران، جامعه‌ای با قومیت و فرهنگ‌های گوناگون دارد و گروه قومی و فرهنگی غالب این کشور، برآمده از فارسی‌زبانان آن است. در کنار آنان، قومیت‌های دیگری، همانند اقوام پرجمعیت آذری و کُرد وجود دارند. قانون اساسی جمهوری اسلامی ایران، اسلام شیعه را دین رسمی ایران اعلام کرده‌است و اکثریت مردم این کشور، پیروان همین مذهب هستند. زبان رسمی این کشور نیز فارسی است.
 
@@ -24,4 +42,5 @@ sample='''
 
 ایران کنونی، یک جمهوری اسلامی با بخش قانون‌گذار است و این نظام ترکیبی، تحت نظر رهبر آن، سید علی خامنه‌ای قرار دارد. ایران از اعضای مؤسس سازمان ملل متحد، سازمان همکاری اقتصادی، سازمان همکاری اسلامی و اوپک است و از قدرت‌های منطقه‌ای شمرده می‌شود. ایران، زیرساخت قابل توجهی در بخش‌های خدماتی، صنعتی و کشاورزی دارد که اقتصاد این کشور را توانمند می‌سازند اما این اقتصاد هنوز بر فروش نفت و گاز متکی است و از فساد مالی رنج می‌برد. منابع طبیعی ایران، قابل توجه هستند و در میان اعضای اوپک، ایران سومین دارندهٔ ذخایر بزرگ اثبات شدهٔ نفت است. میراث فرهنگی این کشور، غنی است و فهرست میراث جهانی یونسکو در ایران از ۲۵ مورد تشکیل می‌شود. 
 '''
-word_cloud(sample)
+
+POS_WC(sample, 'Adj')
