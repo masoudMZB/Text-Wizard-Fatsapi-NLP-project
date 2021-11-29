@@ -85,5 +85,7 @@ def plot_rare_words(data, col="not_set_yet", from_row=0, to_row=5, output_name='
   if not os.path.exists('./plots_images/'):
     os.makedirs('./plots_images/')
   # bbox_inches is for showing all the plot parts.
-  fig.savefig(f'./plots_images/{output_name}.jpg' , bbox_inches="tight")
-  return "plot is ready"
+  img_name = f'{output_name}_{str(uuid.uuid4())}.jpg'
+  img_url = f'./plots_images/{img_name}'
+  fig.savefig(img_url , bbox_inches="tight")
+  return f'/plots_images/{img_name}'

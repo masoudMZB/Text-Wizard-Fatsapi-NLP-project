@@ -5,6 +5,7 @@ arabic_reshaper
 python-bidi
 scikit-learn
 python-multipart
+mtranslate
 
 ###### Requirements with Version Specifiers #######
 #docopt == 0.6.1             # Version Matching. Must be version 0.6.1

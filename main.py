@@ -5,6 +5,7 @@ from fastapi import FastAPI, File, Form, UploadFile
 import pandas as pd
 
 from features.visualization_features_masoud import plot_ngram, plot_rare_words
+from features.data_augmentation_features_masoud import back_translate
 
 MAIN_URL = ""
 class Item(BaseModel):
@@ -78,3 +79,14 @@ async def plot_rareword_for_csv(col_name: str = Form(...) ,
 
 
 # ============== back translation part ================
+#This code is part of SAJJAD AYOUBI source code for his data augmentations techniques
+# https://github.com/sajjjadayobi
+
+class Back_translate_data(BaseModel):
+    text: str = 'HICHI'
+    lang_list: List[str] = ['fa', 'en', 'fa']
+
+@app.post("/back_translate")
+async def back_translate_feature(item : Back_translate_data):
+    if item.text == "HICHI" : return "please send some string"
+    return back_translate(text = item.text, lang_list = item.lang_list)
