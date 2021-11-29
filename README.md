@@ -36,7 +36,7 @@ after installing all the libs then you should start it on your local host , So o
 
 YOU CAN CHECK SWAGGER CREATED BY FASTAPI BUT I WILL EXPLAIN ONE MORE TIME
 
-### Back Translation Api 🌐
+## Back Translation Api 🌐
 
 What is back translate?
 
@@ -68,7 +68,7 @@ you can set any number of languages in a row and then check your results :). tha
 
 
 
-###   N_Gram API 🧮
+##   N_Gram API 🧮
 
 what is N_Gram : In the fields of computational linguistics *and* probability, an *n*-*gram* is a contiguous sequence of *n* items from a given sample of text or speech.
 
@@ -91,7 +91,7 @@ more detail about params is here :
 
 the plot image will be found in ***plots_images*** Folder. in this format output_name_someuniquestrin.jpg
 
-######  if you send string this is a sample POST REQUEST  to http://127.0.0.1:8000/text_ngram: 
+###  if you send string this is a sample POST REQUEST  to http://127.0.0.1:8000/text_ngram: 
 
 > {
 >  "text" : "some text",
@@ -104,7 +104,7 @@ and you get this response for all the other requests too :
 
 > "/plots_images/n_gram_plot_87a490e4-166f-487d-ab6a-a8296731f76e.jpg"
 
-######  if you send list of strings this is a sample POST REQUEST to http://127.0.0.1:8000/text_list_ngram: 
+###  if you send list of strings this is a sample POST REQUEST to http://127.0.0.1:8000/text_list_ngram: 
 
 > {
 >  "text_list" : "some text",
@@ -113,7 +113,7 @@ and you get this response for all the other requests too :
 >  "output_name" : "some_name"
 > }
 
-######  and if you send  dataframe to http://127.0.0.1:8000/csv_ngram
+###  and if you send  dataframe to http://127.0.0.1:8000/csv_ngram
 
 you should send your request in Form . make sure your form has this fields : 
 
@@ -125,7 +125,7 @@ you should send your request in Form . make sure your form has this fields :
 
 
 
-###  Rare Words Api 💬
+##  Rare Words Api 💬
 
 In this part you can check rare words for a text. array of text or column of  a csv file.
 
@@ -148,7 +148,7 @@ more detail about params is here :
 
 the plot image will be found in ***plots_images*** Folder. in this format output_name_someuniquestrin.jpg
 
-######  if you send string this is a sample POST REQUEST  to http://127.0.0.1:8000/text_rareword : 
+###  if you send string this is a sample POST REQUEST  to http://127.0.0.1:8000/text_rareword : 
 
 > {
 >  "text" : "some text",
@@ -161,7 +161,7 @@ and you get this response for all the other requests too :
 
 > "/plots_images/n_gram_plot_87a490e4-166f-487d-ab6a-a8296731f76e.jpg"
 
-######  if you send list of strings this is a sample POST REQUEST to http://127.0.0.1:8000/text_list_rareword
+###  if you send list of strings this is a sample POST REQUEST to http://127.0.0.1:8000/text_list_rareword
 
 > {
 >  "text_list" : "some text",
@@ -170,7 +170,7 @@ and you get this response for all the other requests too :
 >  "output_name" : "some_name"
 > }
 
-######  and if you send  dataframe to http://127.0.0.1:8000/csv_rareword
+###  and if you send  dataframe to http://127.0.0.1:8000/csv_rareword
 
 you should send your request in Form . make sure your form has this fields : 
 
@@ -180,7 +180,7 @@ you should send your request in Form . make sure your form has this fields :
 >  "to_row": 3,
 > output_name : str : name for output file,
 
-#### Contribute 🖇️
+## Contribute 🖇️
 
 
 
