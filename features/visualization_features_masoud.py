@@ -7,7 +7,7 @@ import arabic_reshaper
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
-
+import uuid
 
 
 def plot_ngram(data, col="not_set_yet", n_gram=2, output_name='n_gram_plot', n_most=5):
@@ -26,6 +26,7 @@ def plot_ngram(data, col="not_set_yet", n_gram=2, output_name='n_gram_plot', n_m
   """
   the_corpus = data
   if isinstance(data, str):
+    if len(data.split()) < 2 : return "your text at least must have n words"
     the_corpus = [data]
   if isinstance(data, pd.DataFrame):
     if col == "not_set_yet" : assert print("please set which column you want to check")
@@ -43,8 +44,10 @@ def plot_ngram(data, col="not_set_yet", n_gram=2, output_name='n_gram_plot', n_m
   if not os.path.exists('./plots_images/'):
     os.makedirs('./plots_images/')
   # bbox_inches is for showing all the plot parts.
-  fig.savefig(f'./plots_images/{output_name}.jpg' , bbox_inches="tight")
-  return "plot is ready"
+  img_name = f'{output_name}_{str(uuid.uuid4())}.jpg'
+  img_url = f'./plots_images/{img_name}'
+  fig.savefig(img_url , bbox_inches="tight")
+  return f'/plots_images/{img_name}'
 
 def plot_rare_words(data, col="not_set_yet", from_row=0, to_row=5, output_name='rare_words_plot'):
   """
