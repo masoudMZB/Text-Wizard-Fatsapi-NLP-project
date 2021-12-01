@@ -108,7 +108,7 @@ and you get this response for all the other requests too :
 ####  if you send list of strings this is a sample POST REQUEST to http://127.0.0.1:8000/text_list_ngram: 
 
 > {
->  "text_list" : "some text",
+>  "text_list" : ["some text", "some text2"],
 >  "ngram" : 1,
 >  "n_most": 1,
 >  "output_name" : "some_name"
@@ -165,7 +165,7 @@ and you get this response for all the other requests too :
 ####  if you send list of strings this is a sample POST REQUEST to http://127.0.0.1:8000/text_list_rareword
 
 > {
->  "text_list" : "some text",
+>  "text_list" : ["some text", "some text2"],
 >  "from_row" : 1,
 >  "to_row": 3,
 >  "output_name" : "some_name"
