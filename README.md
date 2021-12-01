@@ -8,7 +8,8 @@ In this project We used some amazing tools to experience something new. Now Let'
 
 ### Installation 🔧
 
-First I recommend you use virtual env. then install these libs :  *python3 -m venv $HOME/tmp/text_wizard_venv/*
+First I recommend you use virtual env. then install the libs.
+to create a virtual env : *python3 -m venv $HOME/tmp/text_wizard_venv/*
 
 to install all dependencies just use 
 
