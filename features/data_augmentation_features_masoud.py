@@ -1,3 +1,5 @@
+# Source code is for Sajjad https://github.com/sajjjadayobi
+
 from mtranslate import translate
 
 def back_translate(text ,lang_list = ["fa", "en", "fa"]):
