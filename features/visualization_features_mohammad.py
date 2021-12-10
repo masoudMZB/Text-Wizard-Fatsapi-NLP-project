@@ -1,46 +1,131 @@
 from wordcloud_fa import WordCloudFa
-
 from os.path import join
 import os
-
+import pandas as pd
 from hazm import POSTagger,word_tokenize
+from datetime import datetime
 
-# Specify path where this code exist
-script_path=os.path.dirname(os.path.abspath(__file__))
 
-def word_cloud(text,remove_stop=True,include_numbers=False):
+def word_cloud(data,col='not_set_yet',remove_stop=True,include_numbers=False,output_name='word_cloud'):
+    '''
+    This function take data and make wordcloud of it. It save wordcloud in img_url
+
+    Parameters
+    ----------
+    data : list/str/pd.DataFrame
+        List of str or pd.DataFrame.
+    col : str/int, optional
+        Neccessary if data is pd.DataFrame
+        It should be the name of column contain data.
+        The default is 'not_set_yet'.
+    remove_stop : Bool, optional
+        True if you want to remove stopword, False otherwise. The default is True.
+    include_numbers : Bool, optional
+        True if you want to include numbers in wordcloud, False otherwise. The default is False.
+    output_name : str, optional
+        First part of name of final image, It will save in img_url. The default is 'word_cloud'.
+
+    Raises
+    ------
+    Exception
+        If data provided as list, all element of it must be str, otherwise Exception will rais.
+    Exception
+        If data provided as pd.DataFrame, col must be specified.
+    Exception
+        If remove_stop set ad True, stopwords.dat must exist in ./resources, otherwise Exception will rais.
+
+    Returns
+    -------
+    img_url : str
+        Path to generated wordcloud image.
+
+    '''
+    text=data
+    if isinstance(data, list):
+        if not all(map(lambda x:isinstance(x, str),data)): raise Exception("All elements of list must be str")
+        text=' '.join(data)
+    if isinstance(data, pd.DataFrame):
+        if col == "not_set_yet" : raise Exception("please set which column you want to check")
+        text=' '.join(data[col].tolist())
+        
     wc=WordCloudFa(stopwords=set(),persian_normalize=True,include_numbers=include_numbers,background_color='white')
     if remove_stop:
-        wc.add_stop_words_from_file(join(script_path,'resources','stopwords.dat'))
+        if os.path.isfile(join('.','resources','stopwords.dat')):
+            wc.add_stop_words_from_file(join('.','resources','stopwords.dat'))
+        else :
+            raise Exception("Please download stopwords.dat from hazm and put it on resources folder in root path. Read README.md for more information")
     wc.generate(text)
-    wc.to_image().save(join(script_path,'first.png'),dpi=(300,300))
+    if not os.path.exists(join('.','plots_images')):
+        os.makedirs(join('.','plots_images'))
+    img_name = f'{output_name}_{datetime.now().strftime("%Y-%m-%d_%H:%M:%S")}.jpg'
+    img_url = join('.','plots_images',img_name)
+    wc.to_image().save(img_url,dpi=(300,300))
     
-def POS_WC(text,POS,remove_stop=False,include_numbers=True):
+    return img_url
     
-    tagger=POSTagger(model=join(script_path,'resources','postagger.model'))
+def POS_WC(data,POS,col='not_set_yet',remove_stop=False,include_numbers=False,output_name='POS_word_cloud'):
+    '''
+    This function take data and make wordcloud of its Verbs/Adjectives. It save wordcloud in img_url
+
+    Parameters
+    ----------
+    data : list/str/pd.DataFrame
+        List of str or pd.DataFrame.
+    POS : str
+        adj for Adjectives.
+        v for Verbs
+    col : str/int, optional
+        Neccessary if data is pd.DataFrame
+        It should be the name of column contain data.
+        The default is 'not_set_yet'.
+    remove_stop : Bool, optional
+        True if you want to remove stopword, False otherwise. The default is False.
+    include_numbers : Bool, optional
+        True if you want to include numbers in wordcloud, False otherwise. The default is False.
+    output_name : str, optional
+        First part of name of final image, It will save in img_url. The default is 'POS_word_cloud'.
+
+    Raises
+    ------
+     Exception
+        If data provided as pd.DataFrame, col must be specified.
+    Exception
+        postagger.model must exist in ./resources, otherwise Exception will rais. 
+    Exception
+        Valid POS must specified, otherwise Exception will raise. Valids are 'adj' and 'v'.
+    
+    Returns
+    -------
+    img_url : str
+        Path to generated wordcloud image.
+
+    '''
+    text=data
+    if isinstance(text, list):
+        text=' '.join(data)
+    elif isinstance(data, pd.DataFrame):
+        if col == "not_set_yet" : raise Exception("Please set which column you want to check")
+        text=' '.join(data[col].tolist())
+        
+    if os.path.isfile(join('.','resources','postagger.model')):
+        tagger=POSTagger(model=join('.','resources','postagger.model'))
+    else:
+        raise Exception("Please download tagger model from hazm and put it on resources folder in root path. Read README.md for more information")
     POS_tags=tagger.tag(word_tokenize(text.strip()))
-    if POS=='V':
+    
+    if POS.lower()=='v':
         words_tags=list(filter(lambda x:x[1]=='V',POS_tags))
         words=list(map(lambda x:x[0],words_tags))
         new_text=' '.join(words)
-        word_cloud(new_text,remove_stop=remove_stop,include_numbers=include_numbers)
-    elif POS=='Adj':
+        output_name='word_cloud_verb'
+    elif POS.lower()=='adj':
         words_tags=list(filter(lambda x:x[1]=='AJe' or x[1]=='AJ',POS_tags))
         words=list(map(lambda x:x[0],words_tags))
         new_text=' '.join(words)
-        word_cloud(new_text,remove_stop=remove_stop,include_numbers=include_numbers)
+        output_name='word_cloud_adjective'
     else:
-        raise Exception("Please provide a valid POS tag")
+        raise Exception("Please provide a valid POS tag:\nv for Verbs\t adj for Adjectives")
+    
+    img_url=word_cloud(new_text,remove_stop=remove_stop,include_numbers=include_numbers,output_name=output_name)
+    return img_url
         
-
-sample='''
-ایران با نام رسمی جمهوری اسلامی ایران، کشوری در آسیای غربی است. این کشور با ۱٬۶۴۸٬۱۹۵ کیلومتر مربع پهناوری، دومین کشور بزرگ خاورمیانه است. ایران از شمال غرب با ارمنستان و آذربایجان، از شمال با دریای خزر، از شمال شرق با ترکمنستان، از شرق با افغانستان و پاکستان، از جنوب با خلیج فارس و دریای عمان و در غرب با عراق و ترکیه هم‌مرز است. این کشور خاورمیانه‌ای، جایگاه استراتژیکی در منطقهٔ خلیج فارس دارد و تنگهٔ هرمز در جنوب آن، مسیری حیاتی برای انتقال نفت خام است. جمعیت کل استان‌های ایران از ۸۳٫۵ میلیون تن می‌گذرد و تهران، پایتخت و پرجمعیت‌ترین شهر این کشور است. ایران، جامعه‌ای با قومیت و فرهنگ‌های گوناگون دارد و گروه قومی و فرهنگی غالب این کشور، برآمده از فارسی‌زبانان آن است. در کنار آنان، قومیت‌های دیگری، همانند اقوام پرجمعیت آذری و کُرد وجود دارند. قانون اساسی جمهوری اسلامی ایران، اسلام شیعه را دین رسمی ایران اعلام کرده‌است و اکثریت مردم این کشور، پیروان همین مذهب هستند. زبان رسمی این کشور نیز فارسی است.
-
-سرزمین ایران، میزبان تمدن‌های کهنی چون ایلام و جیرفت بوده‌است. نخستین‌بار در سدهٔ هفتم پیش از میلاد، در دوران پادشاهی ماد بود که بخش‌های قابل توجهی از فلات ایران یکپارچه شد. در سدهٔ ششم پ. م، شاهنشاهی هخامنشی توسط کوروش بزرگ بنیان نهاده شد تا ایران یکی از بزرگ‌ترین امپراتوری‌های تاریخ را تشکیل دهد. در سدهٔ چهارم پ. م، اسکندر مقدونی این امپراتوری را پایان داد و ایران به بخشی از ممالک هلنیستی تبدیل شد. پدیداری شاهنشاهی اشکانی در سدهٔ سوم پ. م، بار دیگر این کشور را تحت فرمان یک شاهنشاهی ایرانی قرار داد. در سدهٔ سوم م، شاهنشاهی ساسانی، یک امپراتوری گستردهٔ دیگر، در ایران به قدرت رسید و برای چهار سده بر سرزمینی پهناور حکومت کرد و مزدیسنا به دین غالب آن، تبدیل شد. ایران در این دوران نیز درگیر جنگ‌های مستمر و فرساینده با روم بود که به تضعیف کشور انجامید. در میانه‌های سدهٔ هفتم م، مسلمانان، امپراتوری ساسانی را سرنگون کردند و اسلام را به جای دین‌های ایرانی رواج دادند. از دوران خلافت اسلامی تا سدهٔ سیزدهم، فعالیت‌های ادبی، علمی و هنری ایرانی بار دیگر به شکوفایی رسید و ایرانیان مشارکتی اثرگذار در شکل‌گیری دوران طلایی اسلام داشتند. از سدهٔ نهم م، میان‌دورهٔ ایرانی آغاز شد و نخستین حکومت‌های ایرانی‌تبار پس از اسلام، پدیدار شدند. در سدهٔ دهم م، اقوام ترک به این کشور آمدند و حکومت‌هایی را تشکیل دادند که بر بخش بزرگی از ایران، حکومت می‌کردند. از سدهٔ ۱۳ م، حملهٔ مغول به ایران روی داد که به تشکیل ایلخانان انجامید و پس از آن، امپراتوری تیموری پدیدار شد.
-
-با پدیداری صفویان، رونق اقتصادی و پایداری مرزها نمود بیشتری یافت و ایران پس از حدود ۹ سده، تحت یک حکومت مستقل بومی، متحد شد و مذهب آن به شیعه تغییر یافت. پس از سرنگونی صفویان، دودمان‌های افشاریان و زندیان به ترتیب بر ایران، فرمان راندند. در دوران قاجاریان، جنگ‌هایی با روسیه انجام شد که سرزمین‌های قابل توجهی را از این کشور جدا کرد. در دههٔ ۱۲۸۰، جنبش مشروطهٔ ایران قدرت گرفت و قانون اساسی مشروطه را بر این کشور، حاکم کرد. در سال ۱۳۰۴، شاهنشاهی پهلوی توسط رضاشاه بنیان نهاده شد؛ این دوران با اصلاحات گسترده و ایجاد زیرساخت نوین برای ایران، همراه شد. در دوران محمدرضا پهلوی نیز اصلاحات ادامه یافت و ایران، رشد اقتصادی سریعی را تجربه کرد؛ در این دوران، صنعت نفت ایران، ملی شد. سپس نارضایتی‌ها افزایش یافت تا با انقلاب ۱۳۵۷ به رهبری روح‌الله خمینی، این کشور، تحت نظام جمهوری اسلامی اداره شود. از سال ۱۳۵۹ تا ۱۳۶۷ نیز این کشور درگیر جنگی گسترده با عراق بود.
-
-ایران کنونی، یک جمهوری اسلامی با بخش قانون‌گذار است و این نظام ترکیبی، تحت نظر رهبر آن، سید علی خامنه‌ای قرار دارد. ایران از اعضای مؤسس سازمان ملل متحد، سازمان همکاری اقتصادی، سازمان همکاری اسلامی و اوپک است و از قدرت‌های منطقه‌ای شمرده می‌شود. ایران، زیرساخت قابل توجهی در بخش‌های خدماتی، صنعتی و کشاورزی دارد که اقتصاد این کشور را توانمند می‌سازند اما این اقتصاد هنوز بر فروش نفت و گاز متکی است و از فساد مالی رنج می‌برد. منابع طبیعی ایران، قابل توجه هستند و در میان اعضای اوپک، ایران سومین دارندهٔ ذخایر بزرگ اثبات شدهٔ نفت است. میراث فرهنگی این کشور، غنی است و فهرست میراث جهانی یونسکو در ایران از ۲۵ مورد تشکیل می‌شود. 
-'''
-
-POS_WC(sample, 'Adj')
