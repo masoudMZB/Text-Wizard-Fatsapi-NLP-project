@@ -48,7 +48,7 @@ def word_cloud(data,col='not_set_yet',remove_stop=True,include_numbers=False,out
         if col == "not_set_yet" : raise Exception("please set which column you want to check")
         text=' '.join(data[col].tolist())
         
-    wc=WordCloudFa(stopwords=set(),persian_normalize=True,include_numbers=include_numbers,background_color='white')
+    wc=WordCloudFa(stopwords=set(),persian_normalize=True,include_numbers=include_numbers,background_color='white',no_reshape=True,collocations=False,width=800,height=400)
     if remove_stop:
         if os.path.isfile(join('.','resources','stopwords.dat')):
             wc.add_stop_words_from_file(join('.','resources','stopwords.dat'))
@@ -117,12 +117,14 @@ def POS_WC(data,POS,col='not_set_yet',remove_stop=False,include_numbers=False,ou
         words_tags=list(filter(lambda x:x[1]=='V',POS_tags))
         words=list(map(lambda x:x[0],words_tags))
         new_text=' '.join(words)
-        output_name='word_cloud_verb'
+        if output_name=='POS_word_cloud':
+            output_name='word_cloud_verb'
     elif POS.lower()=='adj':
         words_tags=list(filter(lambda x:x[1]=='AJe' or x[1]=='AJ',POS_tags))
         words=list(map(lambda x:x[0],words_tags))
         new_text=' '.join(words)
-        output_name='word_cloud_adjective'
+        if output_name=='POS_word_cloud':
+            output_name='word_cloud_adjective'
     else:
         raise Exception("Please provide a valid POS tag:\nv for Verbs\t adj for Adjectives")
     
