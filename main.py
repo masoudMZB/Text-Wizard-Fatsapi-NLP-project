@@ -2,8 +2,9 @@ from typing import List, Optional
 from pydantic import BaseModel
 from fastapi import FastAPI, File, Form, UploadFile
 import pandas as pd
-
 from features.visualization_features_mohammad import word_cloud, POS_WC
+from features.visualization_features_masoud import plot_ngram, plot_rare_words
+from features.data_augmentation_features_masoud import back_translate
 
 sample_text='''
 ایران با نام رسمی جمهوری اسلامی ایران، کشوری در آسیای غربی است. این کشور با ۱٬۶۴۸٬۱۹۵ کیلومتر مربع پهناوری، دومین کشور بزرگ خاورمیانه است. ایران از شمال غرب با ارمنستان و آذربایجان، از شمال با دریای خزر، از شمال شرق با ترکمنستان، از شرق با افغانستان و پاکستان، از جنوب با خلیج فارس و دریای عمان و در غرب با عراق و ترکیه هم‌مرز است. این کشور خاورمیانه‌ای، جایگاه استراتژیکی در منطقهٔ خلیج فارس دارد و تنگهٔ هرمز در جنوب آن، مسیری حیاتی برای انتقال نفت خام است. جمعیت کل استان‌های ایران از ۸۳٫۵ میلیون تن می‌گذرد و تهران، پایتخت و پرجمعیت‌ترین شهر این کشور است. ایران، جامعه‌ای با قومیت و فرهنگ‌های گوناگون دارد و گروه قومی و فرهنگی غالب این کشور، برآمده از فارسی‌زبانان آن است. در کنار آنان، قومیت‌های دیگری، همانند اقوام پرجمعیت آذری و کُرد وجود دارند. قانون اساسی جمهوری اسلامی ایران، اسلام شیعه را دین رسمی ایران اعلام کرده‌است و اکثریت مردم این کشور، پیروان همین مذهب هستند. زبان رسمی این کشور نیز فارسی است.
@@ -31,6 +32,22 @@ class wc_list(BaseModel):
     include_numbers :Optional[bool]= False
     output_name :Optional[str]='word_cloud'
     pos : str = 'v'
+
+class Item(BaseModel):
+    text: str = 'HICHI'
+    ngram : Optional[int] = 2
+    output_name : Optional[str] ='n_gram_plot'
+    n_most : Optional[int] =  5
+    from_row : Optional[int] = 0
+    to_row : Optional[int] = 5
+
+class Text_list(BaseModel):
+    text_list: List[str] = []
+    ngram : Optional[int] = 2
+    output_name : Optional[str] ='n_gram_plot'
+    n_most : Optional[int] =  5
+    from_row : Optional[int] = 0
+    to_row : Optional[int] = 5
 
 
 
@@ -84,3 +101,67 @@ async def plot_pos_wordcloud_for_csv(col_name: str = Form(...) ,
         return MAIN_URL + image_url
     else:
         return "Please send a csv file format"
+
+@app.post("/text_ngram/")
+async def plot_ngram_for_text(item: Item):
+    image_url = plot_ngram(item.text, n_gram=item.ngram, output_name=item.output_name, n_most=item.n_most)
+    return MAIN_URL + image_url
+
+@app.post("/text_list_ngram")
+async def plot_ngram_for_list(item: Text_list):
+    image_url = plot_ngram(item.text_list, n_gram=item.ngram, output_name=item.output_name, n_most=item.n_most)
+    return MAIN_URL + image_url
+
+@app.post("/csv_ngram")
+async def plot_ngram_for_csv(col_name: str = Form(...) ,
+    file: UploadFile = File(...),
+    ngram : int = Form(...),
+    output_name : str =Form(...),
+    n_most : int =  Form(...)):
+    if file.filename.endswith('.csv'):
+        print(ngram)
+        df = pd.read_csv(file.file)
+        image_url = plot_ngram(df, col = col_name, n_gram=ngram, output_name=output_name, n_most=n_most)
+        return MAIN_URL + image_url
+    else:
+        return "please send a csv file format"
+
+#  ============= Rare words part =============
+@app.post("/text_rareword/")
+async def plot_rareword_for_text(item: Item):
+    print(item)
+    image_url = plot_rare_words(item.text, from_row = item.from_row, to_row = item.to_row, output_name = item.output_name)
+    return MAIN_URL + image_url
+
+@app.post("/text_list_rareword")
+async def plot_rareword_for_list(item: Text_list):
+    image_url = plot_rare_words(item.text_list, from_row = item.from_row, to_row = item.to_row, output_name = item.output_name)
+    return MAIN_URL + image_url
+
+@app.post("/csv_rareword")
+async def plot_rareword_for_csv(col_name: str = Form(...) ,
+    file: UploadFile = File(...),
+    from_row: int = Form(...),
+    output_name : str =Form(...),
+    to_row : int =  Form(...)):
+    if file.filename.endswith('.csv'):
+        df = pd.read_csv(file.file)
+        image_url = plot_rare_words(df, col = col_name, output_name=output_name, from_row = from_row, to_row = to_row)
+        return MAIN_URL + image_url
+    else:
+        return "please send a csv file format"
+
+
+# ============== back translation part ================
+#This code is part of SAJJAD AYOUBI source code for his data augmentations techniques
+# https://github.com/sajjjadayobi
+
+class Back_translate_data(BaseModel):
+    text: str = 'HICHI'
+    lang_list: List[str] = ['fa', 'en', 'fa']
+
+@app.post("/back_translate")
+async def back_translate_feature(item : Back_translate_data):
+    if item.text == "HICHI" : return "please send some string"
+    return back_translate(text = item.text, lang_list = item.lang_list)
+

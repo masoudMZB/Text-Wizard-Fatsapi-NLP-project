@@ -3,3 +3,9 @@ __pycache__
 *.png
 resource*
 plots_images
+.jpg
+.jpeg
+.JPG
+.JPEG
+.png
+.PNG

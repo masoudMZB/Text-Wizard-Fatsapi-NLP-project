@@ -1,5 +1,11 @@
 ###### Requirements without Version Specifiers ######
 fastapi
+seaborn
+arabic_reshaper
+python-bidi
+scikit-learn
+python-multipart
+mtranslate
 
-###### Requirements with Version Specifiers ######
+###### Requirements with Version Specifiers #######
 #docopt == 0.6.1             # Version Matching. Must be version 0.6.1
