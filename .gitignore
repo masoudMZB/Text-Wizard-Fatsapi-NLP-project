@@ -1,5 +1,8 @@
 __pycache__
 .vscode
+*.png
+resource*
+plots_images
 .jpg
 .jpeg
 .JPG
