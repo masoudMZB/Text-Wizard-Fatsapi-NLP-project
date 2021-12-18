@@ -4,7 +4,7 @@ this project is a fun weekend project which  mainly focus on NLP visualization. 
 
 In this project We used some amazing tools to experience something new. Now Let's see What we have: 
 
-
+NOTE : IF YOU ARE NOT USING LINUX MAKE SURE TO CHANGE ALL / to \\\\
 
 ### Installation 🔧
 
