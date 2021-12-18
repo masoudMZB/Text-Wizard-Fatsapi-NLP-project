@@ -1,5 +1,8 @@
 # 🧙🔤 Text Wizard
 
+![model image](https://github.com/masoudmzb/Text-Wizard-Fatsapi-NLP-project/blob/main/features/Poster.jpg)
+*We are using Fast api for Our EDA and feature extractions*
+
 this project is a fun weekend project which  mainly focus on NLP visualization. Thanks to [Sajjad](https://github.com/sajjjadayobi) for his data augmentation technique (Back translation).
 
 In this project We used some amazing tools to experience something new. Now Let's see What we have: 
